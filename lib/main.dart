@@ -73,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case 0:
         page = GeneratorPage();
       case 1:
-        page = Placeholder();
+        page = FavoritesPage();
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
@@ -149,7 +149,7 @@ class GeneratorPage extends StatelessWidget {
                 onPressed: () {
                   appState.getNextWordPair();
                 },
-                child: Text('Next'),
+                child: Text('Generate Next Name'),
               ),
             ],
           ),
@@ -184,6 +184,33 @@ class BigCard extends StatelessWidget {
           semanticsLabel: "${pair.first} ${pair.second}",
         ),
       ),
+    );
+  }
+}
+
+class FavoritesPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    var favoriteNamesList = appState.favorites;
+
+    if (favoriteNamesList.isEmpty) {
+      return Center(
+        child: Text('You have no favorite names yet.'),
+      );
+    }
+
+    return ListView(
+      children: [
+        Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text('You have ${favoriteNamesList.length} favorites:')),
+        for (var favName in favoriteNamesList)
+          ListTile(
+            leading: Icon(Icons.favorite),
+            title: Text(favName.asLowerCase),
+          )
+      ],
     );
   }
 }
