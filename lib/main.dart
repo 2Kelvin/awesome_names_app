@@ -33,14 +33,26 @@ class MyApp extends StatelessWidget {
 
 // App's state
 class MyAppState extends ChangeNotifier {
-  // random word-pair stored in current variable
+  // random word-pair stored in current property
   var current = WordPair.random();
+  // array of favorite word-pairs
+  var favorites = <WordPair>[];
 
   // get next word class method
   void getNextWordPair() {
     // updating current property with the new word pair
     current = WordPair.random();
     // notifying state change to all widgets watching AppState
+    notifyListeners();
+  }
+
+  // adding favorite word pairs
+  void toggleFavorite() {
+    if (favorites.contains(current)) {
+      favorites.remove(current);
+    } else {
+      favorites.add(current);
+    }
     notifyListeners();
   }
 }
@@ -56,6 +68,13 @@ class MyHomePage extends StatelessWidget {
     var appState = context.watch<MyAppState>();
     var pair = appState.current;
 
+    IconData favoriteIcon;
+    if (appState.favorites.contains(pair)) {
+      favoriteIcon = Icons.favorite;
+    } else {
+      favoriteIcon = Icons.favorite_border;
+    }
+
     return Scaffold(
       body: Center(
         child: Column(
@@ -64,12 +83,24 @@ class MyHomePage extends StatelessWidget {
             BigCard(pair: pair),
             SizedBox(height: 20),
             // adding a generate next name elevated button
-            ElevatedButton(
-                onPressed: () {
-                  appState.getNextWordPair();
-                  print('New word-pair generated!');
-                },
-                child: Text('Generate Name'))
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton.icon(
+                    onPressed: () {
+                      appState.toggleFavorite();
+                    },
+                    icon: Icon(favoriteIcon),
+                    label: Text('Like')),
+                SizedBox(width: 20),
+                ElevatedButton(
+                    onPressed: () {
+                      appState.getNextWordPair();
+                      print('New word-pair generated!');
+                    },
+                    child: Text('Generate Name')),
+              ],
+            )
           ],
         ),
       ),
